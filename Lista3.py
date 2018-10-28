@@ -3,7 +3,7 @@ import subprocess
 driver = selenium.webdriver.Chrome("C:\chromedriver.exe")
 driver.get("http://www.mikolaj.ovh")
 driver.delete_all_cookies()
-p = subprocess.Popen(['C:\\Program Files\\Wireshark\\tshark', '-i', '1', '-Y', 'http.request', '-a', 'duration:5', '-T', 'fields', '-e', 'http.cookie', 'host', 'mikolaj.ovh'], stdout=subprocess.PIPE)
+p = subprocess.Popen(['C:\\Program Files\\Wireshark\\tshark', '-i', '1', '-Y', 'http.request', '-a', 'duration:10', '-T', 'fields', '-e', 'http.cookie', 'host', 'mikolaj.ovh'], stdout=subprocess.PIPE)
 
 
 
