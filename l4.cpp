@@ -1,29 +1,48 @@
 #include <iostream>
-#include <string.h>
+#include <string>
 #include <math.h>
 #include <vector>
 #include <cstdlib>
+#include <fstream>
 
 using namespace std;
 
+string removeSpaces(string str) {
+    int i = 0, j = 0;
+    int l = str.length();
+    while (str[i])
+    {
+        if (str[i] != ' '){
+           str[j++] = str[i];
+        } else {
+           l--;
+        }
+        i++;
+    }
+    str[j] = '\0';
+    str.resize (l);
+    return str;
+}
+
 int main(int argc, char* argv[]) {
-    int l = atoi(argv[1]);
-    //cout << "Insert number of cryptograms: ";
-    //cin >> l;
-    //getline(cin, l);
+    int l;
+    cout << "Insert number of cryptograms: ";
+    cin >> l;
+    string s;
+    getline(cin, s);
 
     string* c = new string[l];
 
     int maxlen = 0;
 
     for(int i = 0; i < l; i++) {
-        cout << "Insert cryptogram #" << i << ": ";
-        //cin >> c[i];
+        cout << "Insert cryptogram #" << i + 1 << ": ";
         getline(cin, c[i]);
+        c[i] = removeSpaces(c[i]);
         if(c[i].length() > maxlen) maxlen = c[i].length();
     }
 
-    int d = (maxlen) / 9;
+    int d = (maxlen) / 8;
     int A[l][d];
     for(int i = 0; i < l; i++){
         for(int j = 0; j < d; j++){
@@ -34,56 +53,51 @@ int main(int argc, char* argv[]) {
     int b[8];
     for(int i = 0; i < l - 1; i++){
         for(int j = i + 1; j < l; j++){
-            int len = (min(c[i].length(), c[j].length())) / 9;
-            for(int k = 0; k < len; k += 9){
+            int len = (min(c[i].length(), c[j].length())) / 8;
+            for(int k = 0; k < len; k++){
                 for(int bit = 0; bit < 8; bit++){
-                    if(c[i][k + bit] == c[j][k + bit]){
+                    if(c[i][k * 8 + bit] == c[j][k * 8 + bit]){
                         b[bit] = 0;
                     } else {
                         b[bit] = 1;
                     }
                 }
                 if(b[0] == 0 && b[1] == 1){
-                    A[i][k / 9]++;
-                    A[j][k / 9]++;
+                    A[i][k]++;
+                    A[j][k]++;
                 }
             }
         }
     }
 
-    int lm1 = 0;
-    int lm2 = 0;
-    int k[d][8];
+    int lm = 0;
+    char k[d][8];
+    char mm[d][8];
 
     for(int i = 0; i < d; i++){
         for(int j = 0; j < l; j++){
-            if(A[j][i] > A[lm1][i]){
-                lm2 = lm1;
-                lm1 = j;
+            if(A[j][i] > A[lm][i]){
+                lm = j;
             }
         }
         for(int bit = 0; bit < 8; bit++){
-            if(k[lm1][bit] == c[lm2][bit]){
-                b[bit] = 0;
-            } else {
-                b[bit] = 1;
-            }
+            mm[i][bit] = c[lm][i * 8 + bit];
         }
     }
 
     for(int i = 0; i < d; i++){
         for(int bit = 0; bit < 8; bit++){
-            if(i == 2){
-                if(k[i][bit] == 1){
-                    b[bit] = 0;
+            if(bit == 2){
+                if(mm[i][bit] == '1'){
+                    k[i][bit] = '0';
                 } else {
-                    b[bit] = 1;
+                    k[i][bit] = '1';
                 }
             } else {
-                if(k[i][bit] == 0){
-                    b[bit] = 0;
+                if(mm[i][bit] == '0'){
+                    k[i][bit] = '0';
                 } else {
-                    b[bit] = 1;
+                    k[i][bit] = '1';
                 }
             }
         }
@@ -91,29 +105,32 @@ int main(int argc, char* argv[]) {
 
     cout << "Message to decipher: ";
     string msg;
-    //cin >> msg;
     getline(cin, msg);
+    msg = removeSpaces(msg);
 
-    for(int i = 0; i < (msg.length()) / 9; i++){
+    ofstream myfile;
+    myfile.open ("resbin.txt");
+    for(int i = 0; i < min(d, (int)(msg.length() / 8)); i++){
         for(int bit = 0; bit < 8; bit++){
-            if(k[i][bit] == msg[i * 9 + bit]){
+            if(k[i][bit] == msg[i * 8 + bit]){
                 b[bit] = 0;
             } else {
                 b[bit] = 1;
             }
+            myfile << b[bit];
         }
+        myfile << " ";
         int multiplier = 1;
         int res = 0;
-        for (i = 7; i >= 0; --i ){
-            res += (multiplier * b[i]);
+        for (int j = 7; j >= 0; --j ){
+            res += (multiplier * b[j]);
             multiplier *= 2;
         }
-        char cs = res + '0';
+        char cs = res;
         cout << cs;
 
     }
-
-
+    myfile.close();
 
     return 0;
 }
